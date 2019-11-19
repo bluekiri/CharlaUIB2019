@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29509.3
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StarWarsAPI", "Api\StarWarsAPI.csproj", "{F4CB7997-40DD-4202-B97D-08241B9E9704}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StarWarsAPI.Api", "Api\StarWarsAPI.csproj", "{F4CB7997-40DD-4202-B97D-08241B9E9704}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Api", "Api", "{849BCEE7-0465-453C-B3FF-2211D7413AD5}"
 EndProject
@@ -11,7 +11,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Domain", "Domain", "{71E279
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastructure", "{F7EC3C4E-BDB0-4ACB-A23D-95D4ABA437F5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StarWarsAPI.Domain", "Domain\StarWarsAPI.Domain.csproj", "{051AE592-B8E3-4977-A18F-73EEF353AE38}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StarWarsAPI.Domain", "Domain\StarWarsAPI.Domain.csproj", "{051AE592-B8E3-4977-A18F-73EEF353AE38}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StarWarsAPI.Infrastructure", "Infrastructure\StarWarsAPI.Infrastructure.csproj", "{0CC2EB04-6E39-4C50-8406-480FB202889A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{051AE592-B8E3-4977-A18F-73EEF353AE38}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{051AE592-B8E3-4977-A18F-73EEF353AE38}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{051AE592-B8E3-4977-A18F-73EEF353AE38}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0CC2EB04-6E39-4C50-8406-480FB202889A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0CC2EB04-6E39-4C50-8406-480FB202889A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0CC2EB04-6E39-4C50-8406-480FB202889A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0CC2EB04-6E39-4C50-8406-480FB202889A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -34,6 +40,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{F4CB7997-40DD-4202-B97D-08241B9E9704} = {849BCEE7-0465-453C-B3FF-2211D7413AD5}
 		{051AE592-B8E3-4977-A18F-73EEF353AE38} = {71E2794D-2CDB-4E27-AA0F-41BEDCD88FCD}
+		{0CC2EB04-6E39-4C50-8406-480FB202889A} = {F7EC3C4E-BDB0-4ACB-A23D-95D4ABA437F5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E2D319E9-3EE4-4285-A2F5-1F697DD6765D}
