@@ -4,7 +4,7 @@ namespace StarWarsAPI.Domain.Models.SpeciesAggregate
 {
     public class SpeciesModel
     {
-        [JsonPropertyName("Id")]
+        [JsonPropertyName("id")]
         public int Id { get; set; }
 
         [JsonPropertyName("name")]

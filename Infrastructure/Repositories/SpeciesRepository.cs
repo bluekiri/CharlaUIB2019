@@ -74,7 +74,7 @@ namespace StarWarsAPI.Infrastructure.Repositories
 
         public ICollection<SpeciesModel> ReadAll()
         {
-            return JsonSerializer.Deserialize<ICollection<SpeciesModel>>(File.ReadAllText(_textFile));
+            return JsonSerializer.Deserialize<ICollection<SpeciesModel>>(_textFile);
         }
     }
 }
