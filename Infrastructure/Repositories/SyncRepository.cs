@@ -11,6 +11,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace StarWarsAPI.Infrastructure.Repositories
@@ -29,7 +30,7 @@ namespace StarWarsAPI.Infrastructure.Repositories
         /// Get all applications from enum service
         /// </summary>
         /// <returns></returns>
-        public async Task<bool> FillDataText()
+        public async Task<bool> FillDataText(int? film, bool canIsertedCharacters, bool canIsertedPlanets, bool canIsertedStarships, bool canIsertedSpecies, bool canIsertedVehicles)
         {
             int count = 0;
             List<CharacterModel> characters = new List<CharacterModel>();
@@ -37,37 +38,59 @@ namespace StarWarsAPI.Infrastructure.Repositories
             List<StarshipsModel> starships = new List<StarshipsModel>();
             List<SpeciesModel> species = new List<SpeciesModel>();
             List<VehicleModel> vehicles = new List<VehicleModel>();
-            using HttpResponseMessage httpResponse = await _httpClient.GetAsync(new Uri("https://swapi.co/api/films/"));
+            using HttpResponseMessage httpResponse = await _httpClient.GetAsync(new Uri(film != null ? $"https://swapi.co/api/films/{film}/" : "https://swapi.co/api/films/"));
             if (httpResponse.StatusCode == HttpStatusCode.OK && httpResponse.Content != null)
             {
-                Model model = await JsonSerializer.DeserializeAsync<Model>(await httpResponse.Content.ReadAsStreamAsync());
-                if (model != default && model.Results != null && model.Results.Any())
+                if (film != null)
                 {
-                    foreach (Result result in model.Results)
+                    Result result = await JsonSerializer.DeserializeAsync<Result>(await httpResponse.Content.ReadAsStreamAsync());
+                    if (result != default)
                     {
-                        count = TotalCount(count, result);
-                        characters = await GetAllCharacters(characters, result);
-                        planets = await GetAllPlanets(planets, result);
-                        starships = await GetAllStarships(starships, result);
-                        species = await GetAllSpecies(species, result);
-                        vehicles = await GetAllVehicles(vehicles, result);
+                        count = TotalCount(count, result, canIsertedCharacters, canIsertedPlanets, canIsertedStarships, canIsertedSpecies, canIsertedVehicles);
+                        characters = canIsertedCharacters ? await GetAllCharacters(characters, result) : characters;
+                        planets = canIsertedPlanets ? await GetAllPlanets(planets, result) : planets;
+                        starships = canIsertedStarships ? await GetAllStarships(starships, result) : starships;
+                        species = canIsertedSpecies ? await GetAllSpecies(species, result) : species;
+                        vehicles = canIsertedVehicles ? await GetAllVehicles(vehicles, result) : vehicles;
                     }
 
-                    if (characters.Count > 0) File.WriteAllText("./StubData/Data/Requests/Characters.json", JsonSerializer.Serialize(characters));
-                    if (planets.Count > 0) File.WriteAllText("./StubData/Data/Requests/Planets.json", JsonSerializer.Serialize(planets));
-                    if (starships.Count > 0) File.WriteAllText("./StubData/Data/Requests/Species.json", JsonSerializer.Serialize(starships));
-                    if (species.Count > 0) File.WriteAllText("./StubData/Data/Requests/Starships.json", JsonSerializer.Serialize(species));
-                    if (vehicles.Count > 0) File.WriteAllText("./StubData/Data/Requests/Vehicles.json", JsonSerializer.Serialize(vehicles));
                 }
+                else
+                {
+                    Model model = await JsonSerializer.DeserializeAsync<Model>(await httpResponse.Content.ReadAsStreamAsync());
+                    if (model != default && model.Results != null && model.Results.Any())
+                    {
+                        foreach (Result result in model.Results)
+                        {
+                            count = TotalCount(count, result, canIsertedCharacters, canIsertedPlanets, canIsertedStarships, canIsertedSpecies, canIsertedVehicles);
+                            characters = canIsertedCharacters ? await GetAllCharacters(characters, result) : characters;
+                            planets = canIsertedPlanets ? await GetAllPlanets(planets, result) : planets;
+                            starships = canIsertedStarships ? await GetAllStarships(starships, result) : starships;
+                            species = canIsertedSpecies ? await GetAllSpecies(species, result) : species;
+                            vehicles = canIsertedVehicles ? await GetAllVehicles(vehicles, result) : vehicles;
+                        }
+                    }
+
+                }
+                
+                if (characters.Count > 0) File.WriteAllText(Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).ToString(), "./Infrastructure/StubData/Data/Characters.json"), JsonSerializer.Serialize(characters));
+                if (planets.Count > 0) File.WriteAllText(Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).ToString(), "./Infrastructure/StubData/Data/Planets.json"), JsonSerializer.Serialize(planets));
+                if (starships.Count > 0) File.WriteAllText(Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).ToString(), "./Infrastructure/StubData/Data/Starships.json"), JsonSerializer.Serialize(starships));
+                if (species.Count > 0) File.WriteAllText(Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).ToString(), "./Infrastructure/StubData/Data/Species.json"), JsonSerializer.Serialize(species));
+                if (vehicles.Count > 0) File.WriteAllText(Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).ToString(), "./Infrastructure/StubData/Data/Vehicles.json"), JsonSerializer.Serialize(vehicles));
             }
             return IsTransferOK(count, characters, planets, starships, species, vehicles);
         }
 
         #region PrivateMethods
-        private int TotalCount(int count, Result result)
+        private int TotalCount(int count, Result result, bool canIsertedCharacters, bool canIsertedPlanets, bool canIsertedStarships, bool canIsertedSpecies, bool canIsertedVehicles)
         {
-            count = count + result.Characters.Count + result.Planets.Count + result.Starships.Count + result.Vehicles.Count + result.Species.Count;
-            return count;
+
+            return count + (canIsertedCharacters ? result.Characters.Count : 0) +
+                            (canIsertedPlanets ? result.Planets.Count : 0) +
+                            (canIsertedStarships ? result.Starships.Count : 0) +
+                            (canIsertedSpecies ? result.Vehicles.Count : 0) +
+                            (canIsertedVehicles ? result.Species.Count : 0);
         }
 
         private bool IsTransferOK(int count, List<CharacterModel> characters, List<PlanetsModel> planets, List<StarshipsModel> starships, List<SpeciesModel> species, List<VehicleModel> vehicles)
@@ -83,6 +106,7 @@ namespace StarWarsAPI.Infrastructure.Repositories
             {
                 foreach (Uri uri in result.Characters)
                 {
+                    Thread.Sleep(2000);
                     CharacterModel character = await GetCharacter(uri);
                     if (character != default)
                     {
@@ -117,6 +141,7 @@ namespace StarWarsAPI.Infrastructure.Repositories
             {
                 foreach (Uri uri in result.Planets)
                 {
+                    Thread.Sleep(2000);
                     PlanetsModel planet = await GetPlanet(uri);
                     if (planet != default)
                     {
@@ -151,6 +176,7 @@ namespace StarWarsAPI.Infrastructure.Repositories
             {
                 foreach (Uri uri in result.Starships)
                 {
+                    Thread.Sleep(2000);
                     StarshipsModel starship = await GetStarship(uri);
                     if (starship != default)
                     {
@@ -185,6 +211,7 @@ namespace StarWarsAPI.Infrastructure.Repositories
             {
                 foreach (Uri uri in result.Species)
                 {
+                    Thread.Sleep(2000);
                     SpeciesModel specie = await GetSpecies(uri);
                     if (specie != default)
                     {
@@ -219,6 +246,7 @@ namespace StarWarsAPI.Infrastructure.Repositories
             {
                 foreach (Uri uri in result.Vehicles)
                 {
+                    Thread.Sleep(2000);
                     VehicleModel vehicle = await GetVehicle(uri);
                     if (vehicle != default)
                     {

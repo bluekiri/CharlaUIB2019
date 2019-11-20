@@ -33,6 +33,7 @@ namespace StarWarsAPI
             services
                 .AddLogging()
                 .AddCustomServices()
+                .AddCustomHttpClient()
                 .AddOpenApi()
                 .AddHealthChecks();
         }

@@ -2,7 +2,7 @@
 
 namespace StarWarsAPI.Domain.Models.SpeciesAggregate
 {
-    public partial class SpeciesModel
+    public class SpeciesModel
     {
         [JsonPropertyName("Id")]
         public int Id { get; set; }

@@ -3,7 +3,6 @@ using Microsoft.Extensions.Logging;
 using StarWarsAPI.Domain.Models.SyncAggregate;
 using System;
 using System.Net;
-using System.Threading.Tasks;
 
 namespace StarWarsAPI.Controllers
 {
@@ -17,16 +16,19 @@ namespace StarWarsAPI.Controllers
     {
         private readonly ISyncRepository _repository;
         private readonly ILogger<SyncController> _logger;
+        private readonly IBackgroundTaskQueue _taskQueue;
 
         /// <summary>
         /// Ctor
         /// </summary>
         /// <param name="service"></param>
         /// <param name="logger"></param>
-        public SyncController(ISyncRepository service, ILogger<SyncController> logger)
+        /// <param name="taskQueue"></param>
+        public SyncController(ISyncRepository service, ILogger<SyncController> logger, IBackgroundTaskQueue taskQueue)
         {
             _repository = service ?? throw new ArgumentNullException(nameof(service));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _taskQueue = taskQueue ?? throw new ArgumentNullException(nameof(taskQueue));
         }
 
         /// <summary>
@@ -34,11 +36,16 @@ namespace StarWarsAPI.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPut]
-        public async Task<ActionResult<bool>> SyncData()
+        public ActionResult<bool> SyncData(int? film = null, bool canIsertedCharacters = false, bool canIsertedPlanets = false, bool canIsertedStarships = false, bool canIsertedSpecies = false, bool canIsertedVehicles = false)
         {
             try
             {
-                return Ok(await _repository.FillDataText());
+                _taskQueue.QueueBackgroundWorkItem(async cancellationToken =>
+                {
+                    await _repository.FillDataText(film, canIsertedCharacters, canIsertedPlanets, canIsertedStarships, canIsertedSpecies, canIsertedVehicles);
+                });
+
+                return Ok();
             }
             catch (Exception ex)
             {

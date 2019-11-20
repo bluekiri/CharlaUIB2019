@@ -19,7 +19,7 @@ namespace StarWarsAPI.Domain.Models.SyncAggregate
         public string Title { get; set; }
 
         [JsonPropertyName("episode_id")]
-        public string EpisodeId { get; set; }
+        public int EpisodeId { get; set; }
 
         [JsonPropertyName("opening_crawl")]
         public string OpeningCrawl { get; set; }

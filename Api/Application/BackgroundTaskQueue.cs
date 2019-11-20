@@ -15,6 +15,19 @@ namespace StarWarsAPI.Application
         private SemaphoreSlim _signal = new SemaphoreSlim(0);
 
         /// <summary>
+        /// DequeueAsync
+        /// </summary>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public async Task<Func<CancellationToken, Task>> DequeueAsync(CancellationToken cancellationToken)
+        {
+            await _signal.WaitAsync(cancellationToken);
+            _workItems.TryDequeue(out var workItem);
+
+            return workItem;
+        }
+
+        /// <summary>
         /// QueueBackgroundWorkItem function
         /// </summary>
         /// <param name="workItem"></param>

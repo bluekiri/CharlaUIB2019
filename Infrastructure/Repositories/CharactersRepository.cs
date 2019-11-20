@@ -13,8 +13,8 @@ namespace StarWarsAPI.Infrastructure.Repositories
 
         public CharactersRepository()
         {
-            _path = "./StubData/Data/Characters.json";
-            _textFile = File.ReadAllText(Path.Combine(Directory.GetCurrentDirectory(), _path));
+            _path = Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).ToString(), "./Infrastructure/StubData/Data/Characters.json");
+            _textFile = File.ReadAllText(_path);
         }
 
         public bool Create(CharacterModel entity)

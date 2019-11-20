@@ -13,7 +13,7 @@ namespace StarWarsAPI.Infrastructure.Repositories
 
         public StarshipsRepository()
         {
-            _path = "./StubData/Data/Requests/Starships.json";
+            _path = Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).ToString(), "./Infrastructure/StubData/Data/Starships.json");
             _textFile = File.ReadAllText(_path);
         }
 

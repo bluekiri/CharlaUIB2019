@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using StarWarsAPI.Application;
 using StarWarsAPI.Domain.Models.CharactersAggregate;
 using StarWarsAPI.Domain.Models.PlanetsAggregate;
 using StarWarsAPI.Domain.Models.SpeciesAggregate;
@@ -6,6 +7,7 @@ using StarWarsAPI.Domain.Models.StarshipsAggregate;
 using StarWarsAPI.Domain.Models.SyncAggregate;
 using StarWarsAPI.Domain.Models.VehiclesAggregate;
 using StarWarsAPI.Infrastructure.Repositories;
+using StarWarsAPI.Infrastructure.Service;
 using System;
 using System.IO;
 using System.Reflection;
@@ -31,7 +33,9 @@ namespace StarWarsAPI.Extensions
              .AddScoped<IPlanetsRepository, PlanetsRepository>()
              .AddScoped<ISpeciesRepository, SpeciesRepository>()
              .AddScoped<IStarshipsRepository, StarshipsRepository>()
-             .AddScoped<IVehiclesRepository, VehiclesRepository>();
+             .AddScoped<IVehiclesRepository, VehiclesRepository>()
+             .AddHostedService<QueuedSyncService>()
+             .AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
 
             return services;
         }
