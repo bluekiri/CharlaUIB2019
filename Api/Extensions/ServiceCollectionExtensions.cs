@@ -1,4 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Polly;
+using Polly.Extensions.Http;
 using StarWarsAPI.Application;
 using StarWarsAPI.Domain.Models.CharactersAggregate;
 using StarWarsAPI.Domain.Models.PlanetsAggregate;
@@ -10,6 +12,7 @@ using StarWarsAPI.Infrastructure.Repositories;
 using StarWarsAPI.Infrastructure.Service;
 using System;
 using System.IO;
+using System.Net.Http;
 using System.Reflection;
 
 namespace StarWarsAPI.Extensions
@@ -47,10 +50,31 @@ namespace StarWarsAPI.Extensions
         /// <returns></returns>
         public static IServiceCollection AddCustomHttpClient(this IServiceCollection services)
         {
-            services.AddHttpClient<ISyncRepository, SyncRepository>();
+            services
+                .AddHttpClient<ISyncRepository, SyncRepository>()
+                .AddPolicyHandler(GetPolicyTimeOut())
+                .AddPolicyHandler(GetRetryPolicy());
 
             return services;
         }
+
+        /// <summary>
+        ///Region of the Http polices retries   
+        /// </summary>
+        /// <returns></returns>
+        #region HttpRetriesPolices
+        private static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy()
+        {
+            return HttpPolicyExtensions
+              .HandleTransientHttpError()
+              .WaitAndRetryAsync(2, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)));
+        }
+
+        private static IAsyncPolicy<HttpResponseMessage> GetPolicyTimeOut()
+        {
+            return Policy.TimeoutAsync<HttpResponseMessage>(1);
+        }
+        #endregion
 
         /// <summary>
         /// Add tool to describe, produce, consume and visualize RESTFul APIs.
