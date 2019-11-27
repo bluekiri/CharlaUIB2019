@@ -40,6 +40,7 @@ namespace StarWarsAPI.Controllers
             try
             {
                 return Ok(_repository.Create(input));
+
             }
             catch (Exception ex)
             {
